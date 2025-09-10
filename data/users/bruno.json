@@ -19,6 +19,16 @@
       "recorrente": true,
       "data": "2025-09-10",
       "frequencia": "Mensal"
+    },
+    {
+      "id": 1,
+      "descricao": "Financiamento",
+      "valor": 1950,
+      "categoria": "Moradia",
+      "quem_pagou": "Talita",
+      "recorrente": true,
+      "data": "2025-09-10",
+      "frequencia": "Mensal"
     }
   ]
 }
