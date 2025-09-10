@@ -1,0 +1,14 @@
+{
+  "despesas": [
+    {
+      "id": 1,
+      "descricao": "Seguro",
+      "valor": 110,
+      "categoria": "Moradia",
+      "quem_pagou": "Talita",
+      "recorrente": true,
+      "data": "2025-09-10",
+      "frequencia": "Mensal"
+    }
+  ]
+}
