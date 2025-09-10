@@ -6,13 +6,12 @@
     <title>Finanças do Bruno e Talita</title>
     <link rel="stylesheet" href="style.css">
 <script>
-// Loader de Chart.js com fallback
 (function(){
   function add(src, onerr){
     var s=document.createElement('script');
     s.src=src; s.defer=false; s.async=false;
     s.onload=function(){ console.log('Chart.js carregado:', src); };
-    if(onerr){ s.onerror=onerr; }
+    s.onerror=onerr||function(){};
     document.head.appendChild(s);
   }
   add('https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js', function(){
@@ -352,9 +351,14 @@
 
     <script>
   // >>> Preencha estas variáveis com os valores do seu backend no Render <<<
-  window.BACKEND_URL = "https://financas-backend-ka0g.onrender.com"; // ex.: https://financas-backend.onrender.com
-  window.API_KEY = "Avaya@2024A"; // mesma chave configurada no Render
+  window.BACKEND_URL = "https://SEU_SERVICO.onrender.com"; // ex.: https://financas-backend.onrender.com
+  window.API_KEY = "SUA_API_KEY"; // mesma chave configurada no Render
 </script>
-<script src="app.js"></script>
+
+<script>
+  window.BACKEND_URL = "https://financas-backend-ka0g.onrender.com";
+  window.API_KEY = "Avaya@2024A";
+</script>
+\1
 </body>
 </html>
