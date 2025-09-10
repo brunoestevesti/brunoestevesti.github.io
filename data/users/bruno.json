@@ -9,6 +9,16 @@
       "recorrente": true,
       "data": "2025-09-10",
       "frequencia": "Mensal"
+    },
+    {
+      "id": 2,
+      "descricao": "Celular",
+      "valor": 102,
+      "categoria": "Outros",
+      "quem_pagou": "Bruno",
+      "recorrente": true,
+      "data": "2025-09-10",
+      "frequencia": "Mensal"
     }
   ]
 }
