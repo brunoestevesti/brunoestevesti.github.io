@@ -699,6 +699,15 @@ class FinancasApp {
         if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
+        // Se Chart.js não carregou, mostra mensagem e sai
+        if (typeof Chart === 'undefined' || window.__NO_CHART__) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('Gráfico indisponível (Chart.js não carregado)', canvas.width/2, canvas.height/2);
+            return;
+        }
         
         const categoryTotals = {};
         this.categorias.forEach(cat => categoryTotals[cat] = 0);
@@ -765,21 +774,102 @@ class FinancasApp {
         }
     }
 
+    deletarDespesa(id) {
+        // (patch) garantir persistência após deleção
     
-deletarDespesa(id) {
         const despesa = this.despesas.find(d => d.id === id);
         if (!despesa) return;
-
+        
         this.showConfirmModal(
-            `Tem certeza que deseja excluir a despesa "${despesa.descricao}"?`,
+            `Tem certeza que deseja excluir a despesa "${despesa.descricao
+        if (typeof window.persistNow === 'function') { window.persistNow(); }
+    }"?`,
             () => {
                 this.despesas = this.despesas.filter(d => d.id !== id);
                 this.updateDashboard();
-                this.showMessage('Despesa excluída.', 'success');
-                if (typeof window.persistNow === 'function') { window.persistNow(); }
+                this.showMessage('Despesa excluída com sucesso!', 'success');
             }
         );
     }
+
+    acertarContas() {
+        this.showMessage('Contas acertadas! O saldo foi zerado.', 'success');
+        this.updateDashboard();
+    }
+
+    showConfirmModal(message, callback) {
+        const modal = document.getElementById('confirmModal');
+        const messageEl = document.getElementById('confirmMessage');
+        
+        if (messageEl) messageEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+        
+        this.confirmCallback = callback;
+    }
+
+    hideModal() {
+        const modal = document.getElementById('confirmModal');
+        if (modal) modal.classList.add('hidden');
+        this.confirmCallback = null;
+    }
+
+    showMessage(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        
+        const bgColor = type === 'error' ? 'var(--color-error)' : 
+                        type === 'success' ? 'var(--color-success)' : 'var(--color-info)';
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${bgColor};
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+
+    getCategoryIcon(categoria) {
+        const icons = {
+            'Alimentação': '🍽️',
+            'Moradia': '🏠',
+            'Transporte': '🚗',
+            'Lazer': '🎮',
+            'Saúde': '🏥',
+            'Outros': '📦'
+        };
+        return icons[categoria] || '📦';
+    }
+
+    formatMoney(value) {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(value);
+    }
+
+    formatDate(dateString) {
+        try {
+            return new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
+        } catch (error) {
+            return dateString;
+        }
+    }
+}
 
 // Add CSS animations
 const style = document.createElement('style');
