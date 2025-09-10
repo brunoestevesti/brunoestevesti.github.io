@@ -1,3 +1,44 @@
+
+// === Persistência remota via backend ===
+window.loadUserData = async function(username){
+  try{
+    const res = await fetch(`${window.BACKEND_URL}/load/${encodeURIComponent(username)}`, {
+      headers: { 'x-api-key': window.API_KEY }
+    });
+    const json = await res.json();
+    return (json && json.data) ? json.data : { despesas: [] };
+  }catch(e){
+    console.error('Falha ao carregar dados remotos:', e);
+    return { despesas: [] };
+  }
+};
+
+window.saveUserData = async function(username, userData){
+  try{
+    const res = await fetch(`${window.BACKEND_URL}/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': window.API_KEY
+      },
+      body: JSON.stringify({ username, userData })
+    });
+    const json = await res.json();
+    if(!json.ok){ throw new Error('Erro ao salvar'); }
+  }catch(e){
+    console.error('Falha ao salvar dados remotos:', e);
+  }
+};
+
+window.persistNow = async function(){
+  try{
+    const user = (window.authSystem && typeof window.authSystem.currentUser === 'function') ? window.authSystem.currentUser() : null;
+    if(user && window.financasApp){
+      await window.saveUserData(user, { despesas: window.financasApp.despesas || [] });
+    }
+  }catch(e){ console.error(e); }
+};
+
 // Sistema de Autenticação e Finanças Pessoais - Bruno e Talita
 // Versão simplificada e robusta
 
@@ -109,6 +150,18 @@ function initializeApp() {
         
         // Show main app
         showMainApp();
+        // Carregar dados remotos do usuário e atualizar o app
+        if (typeof window.loadUserData === 'function') {
+            window.loadUserData(currentUser).then(data => {
+                if (window.financasApp) {
+                    window.financasApp.despesas = Array.isArray(data?.despesas) ? data.despesas : [];
+                    window.financasApp.updateDashboard();
+                } else {
+                    window.__pendingDespesas = Array.isArray(data?.despesas) ? data.despesas : [];
+                }
+            }).catch(err => console.error(err));
+        }
+        
         showNotification(`Bem-vindo, ${username}!`, 'success');
         
         return false;
@@ -399,6 +452,13 @@ class FinancasApp {
         this.setupModal();
         this.updateDashboard();
         console.log('Financial app initialized');
+        // Aplicar despesas carregadas antes da inicialização
+        if (window.__pendingDespesas && Array.isArray(window.__pendingDespesas)) {
+            this.despesas = window.__pendingDespesas;
+            window.__pendingDespesas = null;
+            this.updateDashboard();
+        }
+    
     }
 
     setupNavigation() {
@@ -530,7 +590,10 @@ class FinancasApp {
         this.updateDashboard();
         this.showMessage('Despesa adicionada com sucesso!', 'success');
         
-        // Switch to dashboard
+        
+        // Persistir alterações no backend
+        if (typeof window.persistNow === 'function') { window.persistNow(); }
+    // Switch to dashboard
         const dashboardBtn = document.querySelector('[data-section="dashboard"]');
         if (dashboardBtn) dashboardBtn.click();
     }
@@ -703,11 +766,15 @@ class FinancasApp {
     }
 
     deletarDespesa(id) {
+        // (patch) garantir persistência após deleção
+    
         const despesa = this.despesas.find(d => d.id === id);
         if (!despesa) return;
         
         this.showConfirmModal(
-            `Tem certeza que deseja excluir a despesa "${despesa.descricao}"?`,
+            `Tem certeza que deseja excluir a despesa "${despesa.descricao
+        if (typeof window.persistNow === 'function') { window.persistNow(); }
+    }"?`,
             () => {
                 this.despesas = this.despesas.filter(d => d.id !== id);
                 this.updateDashboard();
