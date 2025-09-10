@@ -1,34 +1,3 @@
 {
-  "despesas": [
-    {
-      "id": 1,
-      "descricao": "Seguro",
-      "valor": 110,
-      "categoria": "Moradia",
-      "quem_pagou": "Talita",
-      "recorrente": true,
-      "data": "2025-09-10",
-      "frequencia": "Mensal"
-    },
-    {
-      "id": 2,
-      "descricao": "Celular",
-      "valor": 102,
-      "categoria": "Outros",
-      "quem_pagou": "Bruno",
-      "recorrente": true,
-      "data": "2025-09-10",
-      "frequencia": "Mensal"
-    },
-    {
-      "id": 1,
-      "descricao": "Financiamento",
-      "valor": 1950,
-      "categoria": "Moradia",
-      "quem_pagou": "Talita",
-      "recorrente": true,
-      "data": "2025-09-10",
-      "frequencia": "Mensal"
-    }
-  ]
+  "despesas": []
 }
