@@ -765,102 +765,21 @@ class FinancasApp {
         }
     }
 
-    deletarDespesa(id) {
-        // (patch) garantir persistência após deleção
     
+deletarDespesa(id) {
         const despesa = this.despesas.find(d => d.id === id);
         if (!despesa) return;
-        
+
         this.showConfirmModal(
-            `Tem certeza que deseja excluir a despesa "${despesa.descricao
-        if (typeof window.persistNow === 'function') { window.persistNow(); }
-    }"?`,
+            `Tem certeza que deseja excluir a despesa "${despesa.descricao}"?`,
             () => {
                 this.despesas = this.despesas.filter(d => d.id !== id);
                 this.updateDashboard();
-                this.showMessage('Despesa excluída com sucesso!', 'success');
+                this.showMessage('Despesa excluída.', 'success');
+                if (typeof window.persistNow === 'function') { window.persistNow(); }
             }
         );
     }
-
-    acertarContas() {
-        this.showMessage('Contas acertadas! O saldo foi zerado.', 'success');
-        this.updateDashboard();
-    }
-
-    showConfirmModal(message, callback) {
-        const modal = document.getElementById('confirmModal');
-        const messageEl = document.getElementById('confirmMessage');
-        
-        if (messageEl) messageEl.textContent = message;
-        if (modal) modal.classList.remove('hidden');
-        
-        this.confirmCallback = callback;
-    }
-
-    hideModal() {
-        const modal = document.getElementById('confirmModal');
-        if (modal) modal.classList.add('hidden');
-        this.confirmCallback = null;
-    }
-
-    showMessage(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.textContent = message;
-        
-        const bgColor = type === 'error' ? 'var(--color-error)' : 
-                        type === 'success' ? 'var(--color-success)' : 'var(--color-info)';
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${bgColor};
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1001;
-            font-weight: 500;
-            animation: slideIn 0.3s ease;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 3000);
-    }
-
-    getCategoryIcon(categoria) {
-        const icons = {
-            'Alimentação': '🍽️',
-            'Moradia': '🏠',
-            'Transporte': '🚗',
-            'Lazer': '🎮',
-            'Saúde': '🏥',
-            'Outros': '📦'
-        };
-        return icons[categoria] || '📦';
-    }
-
-    formatMoney(value) {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL'
-        }).format(value);
-    }
-
-    formatDate(dateString) {
-        try {
-            return new Date(dateString + 'T00:00:00').toLocaleDateString('pt-BR');
-        } catch (error) {
-            return dateString;
-        }
-    }
-}
 
 // Add CSS animations
 const style = document.createElement('style');
