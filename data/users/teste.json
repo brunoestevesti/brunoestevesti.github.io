@@ -1,0 +1,14 @@
+{
+  "despesas": [
+    {
+      "id": 3,
+      "descricao": "Seguro",
+      "valor": 110,
+      "categoria": "Transporte",
+      "quem_pagou": "Bruno",
+      "recorrente": true,
+      "data": "2025-09-11",
+      "frequencia": "Mensal"
+    }
+  ]
+}
